@@ -1,0 +1,86 @@
+/* Estilos para el contenedor principal de la tarjeta */
+.movie-card {
+    background-color: #1768AC;
+    /* Fondo blanco */
+    
+    /* Borde ligero */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    overflow: hidden;
+    /* Asegura que la imagen no se salga de los bordes redondeados */
+    margin: 10px;
+    /* Margen alrededor de cada tarjeta */
+    width: 100%;
+    /* Ocupa todo el ancho disponible en su contenedor */
+    max-width: 250px;
+    /* Ancho máximo para evitar que sean demasiado grandes */
+    text-align: center;
+    /* Centra el texto y la imagen */
+    box-shadow: 0 2px 5px #1B79C5;
+    /* Sombra sutil */
+    cursor: pointer;
+    /* Indica que el elemento es clickable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Transición suave para el efecto hover */
+
+    /* Propiedades Flexbox para controlar el tamaño y alineación interna si es necesario */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Efecto al pasar el ratón por encima */
+.movie-card:hover {
+    transform: translateY(-5px);
+    /* Mueve la tarjeta hacia arriba */
+    box-shadow: 0 4px 10px #1B79C5;
+    /* Sombra mayor al enfocar */
+}
+
+/* Estilos para la imagen del póster */
+.movie-card img {
+    width: 100%;
+    /* La imagen ocupa todo el ancho del contenedor de la tarjeta */
+    height: auto;
+    /* Mantiene la proporción de la imagen */
+    display: block;
+    /* Elimina cualquier espacio extra debajo de la imagen */
+    /*object-fit: cover; Si quieres que la imagen cubra el área asignada sin distorsión, recortando si es necesario */
+    /*min-height: 300px; Puedes establecer una altura mínima para un diseño más uniforme si las alturas de los pósters varían mucho */
+}
+
+/* Estilos para el contenedor del texto (título, etc.) */
+.movie-card h3 {
+    font-size: 1.1em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #f0f0f0; /* Make movie titles light on dark background */
+    text-align: center; /* Centered */
+    white-space: nowrap; /* Prevent title from wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    padding: 0 5px; /* Small horizontal padding to prevent text touching edges */
+  }
+
+/* Estilos opcionales para otros textos como rating o fecha */
+.movie-card p {
+    font-size: 0.9em;
+    color: #555;
+    padding: 0 10px 10px;
+    /* Padding abajo para separar del borde inferior */
+}
+
+/* Estilo para el div de "No poster available" */
+.movie-card .no-poster {
+    width: 100%;
+    height: 300px;
+    /* Dale una altura fija similar a la de las imágenes */
+    background-color: #ccc;
+    text-align: center;
+    line-height: 300px;
+    /* Centra verticalmente el texto si el div tiene altura fija */
+    color: #555;
+    font-size: 1.1em;
+    display: flex;
+    /* Usa flex para centrar mejor */
+    justify-content: center;
+    align-items: center;}

@@ -1,0 +1,61 @@
+/* src/App.css */
+
+/* --- Importar una fuente de Google Fonts (ej. Roboto) --- */
+/* Para que esta fuente funcione, debes añadir un <link> en tu public/index.html */
+/* Copia y pega esto DENTRO de la sección <head> de public/index.html: */
+/*
+   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+*/
+
+/* --- Reset básico para navegadores --- */
+*, *::before, *::after {
+  box-sizing: border-box; /* Incluye padding y border en el ancho/alto del elemento */
+}
+
+/* --- Estilos base para todo el documento --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh; /* Asegura que la página tenga al menos la altura de la ventana */
+  font-family: 'Roboto', sans-serif; /* Aplica la fuente importada */
+  background-color: #2541B2; /* Un fondo gris muy oscuro para el tema */
+  color: #e0e0e0; /* Un gris claro para el texto por defecto en toda la app */
+  overflow-x: hidden; /* Evita el scroll horizontal si hay elementos que se salen */
+}
+
+/* Asegura que el contenedor principal de React (#root) y la aplicación (<App>) ocupen todo el espacio */
+#root, .App {
+  display: flex;
+  flex-direction: column; /* Para que los elementos (Header, Routes, Footer) se apilen verticalmente */
+  min-height: 100vh; /* Asegura que la app ocupe al menos toda la altura de la ventana */
+}
+
+/* Estilo para el contenedor principal de contenido (este es CLAVE para los márgenes y el centrado) */
+.main-content-wrapper {
+    flex-grow: 1; /* Esto hace que el contenido ocupe el espacio disponible y empuje el footer hacia abajo */
+    padding: 20px; /* Padding general para el contenido de todas las páginas */
+    max-width: 1400px; /* Limita el ancho del contenido principal para que no sea demasiado ancho en pantallas grandes */
+    margin: 0 auto; /* Centra el contenedor principal horizontalmente */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible hasta el max-width */
+}
+
+/* Estilos generales para títulos (se usarán si no son sobrescritos por CSS más específico) */
+h1, h2, h3, h4, h5, h6 {
+  color: #f0f0f0; /* Un color ligeramente más claro para los títulos sobre fondo oscuro */
+  margin-top: 20px;
+  margin-bottom: 15px;
+  text-align: center; /* Centra los títulos de sección por defecto */
+}
+
+/* Estilos para mensajes de carga/error/no resultados */
+.status-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
+    color: #f0f0f0;
+}
+
+.status-message.error-message {
+    color: #ff6b6b; /* Color rojo para errores */
+}

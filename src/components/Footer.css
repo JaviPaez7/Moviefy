@@ -1,0 +1,36 @@
+/* src/components/Footer.css */
+
+.footer {
+  background-color: #222; /* Consistent dark background */
+  color: #e0e0e0; /* Light gray text color */
+  padding: 20px;
+  text-align: center;
+  margin-top: auto; /* Pushes the footer to the bottom */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow above footer */
+}
+
+.footer a {
+  color: #007bff; /* Link color */
+  text-decoration: none;
+  margin: 0 5px;
+  font-weight: bold; /* Make links bold */
+  transition: color 0.3s ease; /* Smooth color transition on hover */
+  
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+  
+  /* Para pantallas más pequeñas */
+  @media (max-width: 600px) {
+    .footer-links {
+      display: flex; /* Usar flexbox para los enlaces */
+      flex-direction: column; /* Apilar enlaces verticalmente */
+      gap: 5px; /* Espacio entre enlaces apilados */
+    }
+  
+    .footer-links a {
+      margin: 5px 0; /* Ajustar margen para apilado vertical */
+    }
+  }

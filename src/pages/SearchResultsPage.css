@@ -1,0 +1,41 @@
+/* src/pages/SearchResultsPage.css */
+
+.search-results-page {
+    padding: 20px; /* Relleno alrededor del contenido */
+    max-width: 1200px; /* Ancho máximo para el contenido */
+    margin: 0 auto; /* Centra la página */
+    min-height: calc(100vh - 60px); /* Altura mínima (100vh menos altura aprox del header), ajusta si tu header es diferente */
+  }
+  
+  .search-results-page h1 {
+    text-align: center; /* Centra el título */
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  /* Puedes (y deberías) REUTILIZAR los estilos del layout de la lista de películas
+     que pusiste en HomePage.css (la clase .movies-list) */
+  
+  /* Asegúrate de que la clase .movies-list en HomePage.css o en un archivo CSS global/compartido
+     tenga reglas como:
+     .movies-list {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+         gap: 20px;
+         justify-items: center;
+     }
+  */
+  
+  /* Estilos para mensajes de estado (cargando, error, no resultados) */
+  .search-results-page .status-message {
+      text-align: center;
+      font-size: 1.2em;
+      color: #555;
+      margin-top: 40px;
+  }
+  
+  .search-results-page .error-message {
+      color: red;
+      font-weight: bold;
+  }

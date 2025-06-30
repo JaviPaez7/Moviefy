@@ -1,0 +1,30 @@
+/* Estilos para el contenedor de la lista de películas en HomePage */
+.movies-list {
+    display: grid;
+    /* Usa CSS Grid para el layout */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    /* Columnas responsivas */
+    gap: 20px;
+    /* Espacio entre las tarjetas */
+    padding: 20px;
+    /* Padding alrededor de la cuadrícula */
+    justify-items: center;
+    /* Centra las tarjetas dentro de cada celda de la cuadrícula */
+}
+
+/* Estilos opcionales para el título de la página */
+.home-page h1 { /* Assuming this is the "Popular Movies" title */
+    font-size: 2.5em; /* Make it larger */
+    color: #f0f0f0; /* Ensure it's light */
+    margin-top: 40px; /* More space above */
+    margin-bottom: 30px; /* More space below */
+    text-align: center; /* Ensure it's centered */
+  }
+  
+  .movies-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px; /* Slightly more gap between cards */
+    padding: 20px 0; /* Padding within the list container */
+    justify-items: center; /* Centers individual items in their grid cells */
+  }
