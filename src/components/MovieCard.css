@@ -1,86 +1,112 @@
-/* Estilos para el contenedor principal de la tarjeta */
+/* src/components/MovieCard.css */
+
 .movie-card {
-    background-color: #1768AC;
-    /* Fondo blanco */
-    
-    /* Borde ligero */
-    border-radius: 8px;
-    /* Bordes redondeados */
-    overflow: hidden;
-    /* Asegura que la imagen no se salga de los bordes redondeados */
-    margin: 10px;
-    /* Margen alrededor de cada tarjeta */
-    width: 100%;
-    /* Ocupa todo el ancho disponible en su contenedor */
-    max-width: 250px;
-    /* Ancho máximo para evitar que sean demasiado grandes */
-    text-align: center;
-    /* Centra el texto y la imagen */
-    box-shadow: 0 2px 5px #1B79C5;
-    /* Sombra sutil */
-    cursor: pointer;
-    /* Indica que el elemento es clickable */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    /* Transición suave para el efecto hover */
-
-    /* Propiedades Flexbox para controlar el tamaño y alineación interna si es necesario */
-    display: flex;
-    flex-direction: column;
+  background-color: var(--surface-color-solid);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Efecto al pasar el ratón por encima */
 .movie-card:hover {
-    transform: translateY(-5px);
-    /* Mueve la tarjeta hacia arriba */
-    box-shadow: 0 4px 10px #1B79C5;
-    /* Sombra mayor al enfocar */
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* Estilos para la imagen del póster */
+/* Contenedor de la imagen para efecto overflow */
+.movie-card-image-wrapper {
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 2/3;
+  width: 100%;
+}
+
 .movie-card img {
-    width: 100%;
-    /* La imagen ocupa todo el ancho del contenedor de la tarjeta */
-    height: auto;
-    /* Mantiene la proporción de la imagen */
-    display: block;
-    /* Elimina cualquier espacio extra debajo de la imagen */
-    /*object-fit: cover; Si quieres que la imagen cubra el área asignada sin distorsión, recortando si es necesario */
-    /*min-height: 300px; Puedes establecer una altura mínima para un diseño más uniforme si las alturas de los pósters varían mucho */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
 }
 
-/* Estilos para el contenedor del texto (título, etc.) */
+.movie-card:hover img {
+  transform: scale(1.05); /* Zoom in on hover */
+}
+
+/* Estilos para el contenedor del texto */
+.movie-card-info {
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .movie-card h3 {
-    font-size: 1.1em;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    color: #f0f0f0; /* Make movie titles light on dark background */
-    text-align: center; /* Centered */
-    white-space: nowrap; /* Prevent title from wrapping */
-    overflow: hidden; /* Hide overflow text */
-    text-overflow: ellipsis; /* Add ellipsis for overflow text */
-    padding: 0 5px; /* Small horizontal padding to prevent text touching edges */
-  }
-
-/* Estilos opcionales para otros textos como rating o fecha */
-.movie-card p {
-    font-size: 0.9em;
-    color: #555;
-    padding: 0 10px 10px;
-    /* Padding abajo para separar del borde inferior */
+  font-size: 1.1em;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-heading);
+  font-weight: 600;
 }
 
-/* Estilo para el div de "No poster available" */
+.movie-card p {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+}
+
+/* Estilo para "No poster available" */
 .movie-card .no-poster {
-    width: 100%;
-    height: 300px;
-    /* Dale una altura fija similar a la de las imágenes */
-    background-color: #ccc;
-    text-align: center;
-    line-height: 300px;
-    /* Centra verticalmente el texto si el div tiene altura fija */
-    color: #555;
-    font-size: 1.1em;
-    display: flex;
-    /* Usa flex para centrar mejor */
-    justify-content: center;
-    align-items: center;}
+  width: 100%;
+  aspect-ratio: 2/3;
+  background-color: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 1em;
+  text-align: center;
+  padding: 20px;
+}
+
+.favorite-btn-card {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.favorite-btn-card:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.8);
+}

@@ -1,30 +1,111 @@
-/* Estilos para el contenedor de la lista de películas en HomePage */
-.movies-list {
-    display: grid;
-    /* Usa CSS Grid para el layout */
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    /* Columnas responsivas */
-    gap: 20px;
-    /* Espacio entre las tarjetas */
-    padding: 20px;
-    /* Padding alrededor de la cuadrícula */
-    justify-items: center;
-    /* Centra las tarjetas dentro de cada celda de la cuadrícula */
+/* src/pages/HomePage.css */
+
+.home-page h1,
+.homepage h1 {
+  font-size: 2.5em;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  text-align: center;
 }
 
-/* Estilos opcionales para el título de la página */
-.home-page h1 { /* Assuming this is the "Popular Movies" title */
-    font-size: 2.5em; /* Make it larger */
-    color: #f0f0f0; /* Ensure it's light */
-    margin-top: 40px; /* More space above */
-    margin-bottom: 30px; /* More space below */
-    text-align: center; /* Ensure it's centered */
+.hero-banner {
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  /* Degradado hacia arriba usando el color de fondo para fundirse */
+  background: linear-gradient(to top, var(--bg-color) 0%, transparent 80%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 40px;
+  max-width: 800px;
+}
+
+.hero-content h2 {
+  font-family: var(--font-heading);
+  font-size: 3em;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.hero-content p {
+  font-size: 1.1em;
+  color: #ddd;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.content-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  padding: 10px 24px;
+  font-size: 1.1em;
+  font-family: var(--font-heading);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-hover);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.movies-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 30px;
+  padding: 10px;
+}
+
+@media (max-width: 600px) {
+  .movies-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 5px;
   }
   
-  .movies-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px; /* Slightly more gap between cards */
-    padding: 20px 0; /* Padding within the list container */
-    justify-items: center; /* Centers individual items in their grid cells */
+  .hero-content h2 {
+    font-size: 2em;
   }
+  
+  .hero-banner {
+    height: 40vh;
+    min-height: 300px;
+  }
+}

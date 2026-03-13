@@ -1,39 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom'; // Hook para leer query parameters
-import MovieCard from '../components/MovieCard'; // Para mostrar los resultados
-// Puedes crear un archivo CSS para SearchResultsPage.css
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import MovieCard from '../components/MovieCard';
 
 function SearchResultsPage() {
-  // Hook para leer y modificar los query parameters de la URL (?query=...)
   const [searchParams] = useSearchParams();
-  const searchTerm = searchParams.get('query'); // Obtiene el valor del parámetro 'query'
+  const searchTerm = searchParams.get('query');
 
-  // Estado para los resultados de búsqueda, carga y error
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Efecto para realizar la búsqueda cuando el término de búsqueda cambie
+  // Use a ref to attach to the last element we want to observe
+  const observer = useRef();
+  
+  const lastElementRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
+
+  // Restablecer la página cuando el término de búsqueda cambia
+  useEffect(() => {
+    setResults([]);
+    setPage(1);
+    setHasMore(true);
+  }, [searchTerm]);
+
   useEffect(() => {
     if (!searchTerm) {
-      // Si no hay término de búsqueda en la URL, no hacemos nada o mostramos un mensaje
-      setResults([]); // Limpia resultados anteriores
       setLoading(false);
       setError("Por favor, introduce un término de búsqueda.");
-      return; // Sale del efecto
+      return;
     }
 
-    // Restablece estados al iniciar una nueva búsqueda
     setLoading(true);
     setError(null);
-    setResults([]); // Opcional: limpiar resultados anteriores mientras carga
 
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-    // Endpoint para buscar películas
-    // Para buscar también series, podrías usar '/search/multi' en lugar de '/search/movie'
-    const API_URL = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(searchTerm)}&language=en-US&page=1`;
-
-    console.log("Realizando búsqueda:", API_URL);
+    const API_URL = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(searchTerm)}&language=en-US&page=${page}`;
 
     const fetchSearchResults = async () => {
       try {
@@ -42,8 +55,15 @@ function SearchResultsPage() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Resultados de búsqueda recibidos:", data);
-        setResults(data.results); // TMDB devuelve los resultados en 'results'
+        
+        // Filtramos resultados que son de personas (solo queremos series o pelis)
+        const relevantResults = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
+        
+        // Ordenamos por popularidad para que los resultados sean más relevantes (descendente)
+        relevantResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
+        setResults(prev => [...prev, ...relevantResults]);
+        setHasMore(data.page < data.total_pages);
         setLoading(false);
       } catch (error) {
         console.error("Error al buscar:", error);
@@ -54,39 +74,35 @@ function SearchResultsPage() {
 
     fetchSearchResults();
 
-  }, [searchTerm]); // Este efecto se re-ejecuta cada vez que 'searchTerm' cambia en la URL
+  }, [searchTerm, page]);
 
-  // Renderizado condicional
-  if (loading) {
-    return <div className="status-message">Cargando resultados para "{searchTerm}"...</div>;
+  if (results.length === 0 && !searchTerm) {
+      return <div className="status-message">Introduce un término para buscar películas o series.</div>;
   }
 
-  if (error) {
-    return <div className="status-message error-message">Error: {error}</div>; // Añade error-message también
-  }
-
-  if (results.length === 0 && searchTerm) {
-      return <div className="status-message">No se encontraron resultados para "{searchTerm}".</div>;
-  }
-
-   if (results.length === 0 && !searchTerm) {
-      return <div className="status-message">Introduce un término para buscar películas.</div>;
-  }
-
-
-  // Mostrar los resultados si hay
   return (
     <div className="search-results-page">
       <h1>Resultados de Búsqueda para "{searchTerm}"</h1>
 
-       <div className="movies-list">
-        {/* --- AÑADE .filter(item => item != null) AQUÍ --- */}
+      {error && <div className="status-message error-message">Error: {error}</div>}
+      
+      {!loading && !error && results.length === 0 && (
+        <div className="status-message">No se encontraron resultados para "{searchTerm}".</div>
+      )}
+
+      <div className="movies-list">
         {results
-          .filter(item => item != null) // Filtra elementos nulos o indefinidos
-          .map(result => (
-           <MovieCard key={result.id} item={result} />
-        ))}
+          .filter(item => item != null)
+          .map((result, index) => {
+            if (results.length === index + 1) {
+              return <div ref={lastElementRef} key={`res-${result.id}-${index}`}><MovieCard item={result} /></div>
+            } else {
+              return <MovieCard key={`res-${result.id}-${index}`} item={result} />
+            }
+        })}
       </div>
+      
+      {loading && <div className="status-message">Cargando resultados...</div>}
     </div>
   );
 }

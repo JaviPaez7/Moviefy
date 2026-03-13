@@ -1,108 +1,171 @@
 /* src/components/Header.css */
 
 .header {
-  background-color: #03256C; /* Un tono de azul más oscuro para el header */
-  color: #fff; /* Texto blanco */
-  padding: 15px 20px;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  padding: 16px 24px;
   display: flex;
-  justify-content: center; /* Centra el contenido horizontalmente por defecto */
-  align-items: center; /* Centra el contenido verticalmente */
-  position: relative; /* Importante: para que el posicionamiento absoluto del título funcione */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Una sombra sutil debajo del header */
-  min-height: 60px; /* Altura mínima para asegurar espacio */
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  min-height: 70px;
 }
 
-/* --- Estilos para el TÍTULO "VanesaMovie" --- */
+/* --- Estilos para el TÍTULO "Moviefy" --- */
 .site-title {
-  /* Estas propiedades posicionan el div en el centro, IGNORANDO EL FLEX de .header */
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1; /* Asegura que esté por encima de otros elementos si hay superposición */
+  z-index: 1;
 }
 
-.site-title a { /* Apuntamos directamente al Link dentro de site-title */
-  color: #fff; /* Color blanco para el texto del Link */
-  text-decoration: none; /* Quitar el subrayado del Link */
-  font-size: 1.8em; /* Tamaño de fuente un poco más grande */
-  font-weight: 700; /* Negrita */
+.site-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1.8em;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  letter-spacing: -0.05em;
   cursor: pointer;
-  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  white-space: nowrap;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: opacity 0.3s ease;
 }
 
 .site-title a:hover {
-  color: #007bff; /* Un pequeño cambio de color al pasar el ratón para indicar que es clickeable */
+  opacity: 0.8;
 }
 
 /* --- Estilos para la BARRA de BÚSQUEDA --- */
 .main-nav {
-  margin-left: auto; /* Esto empuja la barra de búsqueda al extremo derecho */
-  position: relative; /* Asegura que esté en el flujo normal y se muestre correctamente */
-  z-index: 2; /* Asegura que esté por encima del título si hay solapamiento */
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-/* Estilos de los elementos dentro de SearchBar.jsx, usando las nuevas clases */
 .search-form {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .search-input {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #444;
-  background-color: #333; /* Fondo más oscuro para el input */
-  color: white; /* Texto del input blanco */
-  font-size: 1em;
-  outline: none; /* Quitar el borde de enfoque por defecto */
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: 0.95em;
+  font-family: var(--font-body);
+  outline: none;
+  transition: all 0.3s ease;
+  width: 200px;
+}
+
+.favorites-link {
+  color: #ef4444; /* Rojo para favoritos */
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: rgba(239, 68, 68, 0.1);
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.favorites-link:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.search-input:focus {
+  border-color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  width: 240px;
 }
 
 .search-input::placeholder {
-  color: #bbb; /* Color del placeholder */
+  color: var(--text-secondary);
 }
 
 .search-button {
-  padding: 8px 15px;
-  border-radius: 5px;
+  padding: 10px 20px;
+  border-radius: 20px;
   border: none;
-  background-color: #007bff; /* Color azul estándar */
+  background-color: var(--primary-color);
   color: white;
   cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease; /* Transición suave al pasar el ratón */
+  font-weight: 500;
+  font-size: 0.95em;
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.search-button:hover {
-  background-color: #0056b3; /* Tono más oscuro al pasar el ratón */
+.search-button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+}
+
+.search-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.search-button:disabled {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 /* Media query para hacer el header responsive en pantallas pequeñas */
 @media (max-width: 768px) {
   .header {
-    flex-direction: column; /* Apila elementos verticalmente */
-    padding: 10px;
-    min-height: auto; /* Resetear la altura mínima en pantallas pequeñas */
+    flex-direction: column;
+    padding: 16px;
+    min-height: auto;
   }
 
   .site-title {
-    position: static; /* Quita el posicionamiento absoluto */
-    transform: none; /* Quita la transformación */
-    margin-bottom: 10px; /* Añade espacio debajo del título */
+    position: static;
+    transform: none;
+    margin-bottom: 16px;
   }
 
   .main-nav {
-    width: 100%; /* La barra de búsqueda ocupa todo el ancho */
-    margin-left: 0; /* Quita el margen automático */
-    justify-content: center; /* Centra la barra de búsqueda */
+    width: 100%;
+    margin-left: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
   }
 
   .search-form {
-    flex-direction: column; /* Apila input y botón verticalmente */
     width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
-  .search-input, .search-button {
-    width: 100%; /* Ocupan todo el ancho disponible */
-    margin-bottom: 5px; /* Espacio entre ellos */
+  .search-input {
+    flex-grow: 1;
+    width: 100%;
   }
-}
+  
+  .search-input:focus {
+    width: 100%;
+  }
+}

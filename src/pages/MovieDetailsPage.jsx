@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom'; // Hook para obtener parámetros de la URL
+import { FavoritesContext } from '../context/FavoritesContext';
 import './MovieDetailsPage.css'; // Asegúrate de crear este archivo para los estilos
 // URL base para las imágenes de TMDB (la necesitamos aquí también)
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
@@ -9,6 +10,7 @@ const POSTER_SIZE = 'w500';
 function MovieDetailsPage() {
   // Obtiene el parámetro 'id' de la URL (definido en App.jsx como /movie/:id)
   const { id } = useParams();
+  const { toggleFavorite, isFavorite } = useContext(FavoritesContext);
 
   // Estado para los detalles de la película, carga y error
   const [movieDetails, setMovieDetails] = useState(null);
@@ -73,6 +75,10 @@ function MovieDetailsPage() {
       return <div>No se encontraron datos para esta película.</div>;
   }
 
+  const handleFavoriteClick = () => {
+    toggleFavorite(movieDetails);
+  };
+  const favIcon = isFavorite(movieDetails.id) ? '❤️' : '🤍';
 
   // Mostrar los detalles de la película
   return (
@@ -87,34 +93,34 @@ function MovieDetailsPage() {
           </div>
       )}
 
-      <div className="details-content" >
-         {/* Muestra el póster si hay backdrop, o un póster más grande si no */}
-         {!movieDetails.backdrop_path && movieDetails.poster_path && (
-              <img
-                src={`${TMDB_IMAGE_BASE_URL}${POSTER_SIZE}${movieDetails.poster_path}`}
-                alt={`Poster of ${movieDetails.title}`}
-                
-              />
-         )}
+      <div className="details-content">
+        <div className="details-content-poster">
+          <img
+            src={movieDetails.poster_path ? `${TMDB_IMAGE_BASE_URL}${POSTER_SIZE}${movieDetails.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster'}
+            alt={`Poster of ${movieDetails.title}`}
+          />
+        </div>
+        <div className="details-content-info">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h1>{movieDetails.title}</h1>
+            <button className="favorite-btn-details" onClick={handleFavoriteClick}>
+              {favIcon}
+            </button>
+          </div>
+          {movieDetails.tagline && <p className="details-tagline">{movieDetails.tagline}</p>}
+          
+          {movieDetails.genres && movieDetails.genres.length > 0 && (
+            <div className="genres">
+              {movieDetails.genres.map(genre => (
+                <span key={genre.id}>{genre.name}</span>
+              ))}
+            </div>
+          )}
 
-
-        <h1>{movieDetails.title}</h1>
-        <p><strong>Rating:</strong> {movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A'}</p>
-        <p><strong>Fecha de Estreno:</strong> {movieDetails.release_date || 'N/A'}</p>
-        <p><strong>Sinopsis:</strong> {movieDetails.overview || 'Sin sinopsis disponible.'}</p>
-
-        {/* Puedes añadir más detalles: géneros, reparto, director, etc. */}
-        {/* movieDetails.genres es un array, puedes iterar sobre él */}
-        {movieDetails.genres && movieDetails.genres.length > 0 && (
-            <p><strong>Géneros:</strong> {movieDetails.genres.map(genre => genre.name).join(', ')}</p>
-        )}
-
-        {/* Nota: Para el reparto (cast) y equipo (crew), necesitarías hacer OTRA llamada a la API
-             al endpoint /movie/{id}/credits. Esto haría el componente más complejo,
-             podrías dejarlo como una mejora futura.
-         */}
-
-         <div style={{ clear: 'both' }}></div> {/* Limpia los floats si usaste float: left */}
+          <p><strong>Rating:</strong> {movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A'}</p>
+          <p><strong>Fecha de Estreno:</strong> {movieDetails.release_date || 'N/A'}</p>
+          <p><strong>Sinopsis:</strong> <br/> {movieDetails.overview || 'Sin sinopsis disponible.'}</p>
+        </div>
       </div>
     </div>
   );

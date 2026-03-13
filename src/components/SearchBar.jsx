@@ -1,39 +1,53 @@
-import React, { useState } from 'react';
-import './SearchBar.css'; // Asegúrate de tener un archivo CSS para estilizar el SearchBar
+import React, { useState, useEffect } from "react";
+// Ya no necesitamos estilos específicos aquí si usamos los del Header, pero dejamos el import si hay algo extra.
+import "./SearchBar.css";
 
-// import './SearchBar.css';
-
-// Este componente recibirá una función 'onSearch' como prop
 function SearchBar({ onSearch }) {
-  const [query, setQuery] = useState(''); // Estado para guardar el texto del input
+  const [query, setQuery] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Maneja el cambio en el input
+  useEffect(() => {
+    if (!query.trim()) return; 
+
+    setIsTyping(true);
+    const timeout = setTimeout(() => {
+      onSearch(query.trim());
+      setIsTyping(false);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [query, onSearch]);
+
   const handleInputChange = (event) => {
     setQuery(event.target.value);
   };
 
-  // Maneja el envío del formulario
-  const handleSearchSubmit = (event) => {
-    event.preventDefault(); // Previene que la página se recargue
-
-    // Si hay una función onSearch proporcionada y la búsqueda no está vacía
-    if (onSearch && query.trim()) {
-      onSearch(query.trim()); // Llama a la función onSearch con el término de búsqueda
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (query.trim()) {
+      onSearch(query.trim());
     }
-    // Opcional: setQuery(''); // Limpiar el input después de buscar
   };
 
   return (
-    // Un formulario para que al presionar Enter también se dispare la búsqueda
-    <form onSubmit={handleSearchSubmit} className="search-bar"> {/* Añade clase para estilos */}
+    <form onSubmit={handleSubmit} className="search-form" role="search">
+      <label htmlFor="search" className="visually-hidden">
+        Buscar películas o series
+      </label>
       <input
+        id="search"
         type="text"
-        placeholder="Buscar películas..."
+        className="search-input"
+        placeholder="Buscar..."
         value={query}
         onChange={handleInputChange}
-        aria-label="Buscar películas" // Buena práctica para accesibilidad
+        aria-label="Buscar películas o series"
+        autoFocus
+        onFocus={(e) => e.target.select()}
       />
-      <button type="submit">Buscar</button>
+      <button type="submit" className="search-button" disabled={!query.trim() || isTyping}>
+        {isTyping ? "..." : "Buscar"}
+      </button>
     </form>
   );
 }

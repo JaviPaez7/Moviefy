@@ -1,38 +1,25 @@
 /* src/pages/MovieDetailsPage.css */
 
-/* .movie-details-page - Este contenedor debe ocupar todo el ancho del .main-content-wrapper */
 .movie-details-page {
-  /* No necesitamos background-color ni color aquí si el body ya lo define globalmente */
-  /* background-color: #f4f4f4; */
-  /* color: #333; */
   line-height: 1.6;
-  /* min-height: 100vh; -- Ya lo maneja .App y .main-content-wrapper */
-  width: 100%; /* Asegura que ocupe el 100% del ancho de su padre */
+  width: 100%;
 }
 
-/* Estilos para la sección del fondo (backdrop) */
 .backdrop {
-  width: 100%; /* Ocupa todo el ancho de su padre (.movie-details-page) */
-  height: 400px; /* Altura más razonable para un fondo. Ajusta al gusto. */
+  width: 100%;
+  height: 500px;
   background-size: cover;
-  background-position: center;
+  background-position: center 20%;
   position: relative;
   display: flex;
-  flex-direction: column; /* Apila el contenido verticalmente */
-  justify-content: flex-end; /* Alinea el contenido (si lo hay) en la parte inferior */
-  
-  /* El padding aquí es para el contenido DENTRO del backdrop, no para el backdrop mismo */
-  /* Si no hay contenido dentro del backdrop, este padding no es crítico. */
-  padding: 20px;
-  
-  color: white; /* Texto blanco sobre el fondo oscuro */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Sombra más fuerte para el texto */
-  
-  /* Margen inferior para separar el backdrop del contenido principal */
-  margin-bottom: 30px; 
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 40px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-/* Un degradado sutil sobre el fondo para mejorar la legibilidad del texto */
 .backdrop::before {
   content: "";
   position: absolute;
@@ -42,140 +29,166 @@
   bottom: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.8) 0%, /* Más opaco en la parte inferior */
-    rgba(0, 0, 0, 0) 50%
+    var(--bg-color) 0%,
+    rgba(15, 23, 42, 0.8) 20%,
+    rgba(15, 23, 42, 0) 100%
   );
-  z-index: 0; /* Asegura que esté detrás del contenido del backdrop */
+  z-index: 0;
 }
 
-/* Estilos para el contenido principal de los detalles (información, póster, etc.) */
 .details-content {
-  /* IMPORTANTE: Quitamos max-width y margin: auto de aquí.
-     Ya el .main-content-wrapper en index.css hace eso globalmente.
-     Solo necesitamos padding interno. */
-  padding: 0 20px; /* Padding horizontal de 20px, sin padding vertical aquí.
-                     El espacio vertical viene del margin-bottom del backdrop
-                     y el padding superior/inferior del .main-content-wrapper. */
-  
-  /* Ajusta el background-color para que se integre con el tema oscuro */
-  background-color: #186EB4; /* Fondo oscuro para la caja de contenido */
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada y oscura */
-  
-  /* Añadimos un padding interno general para el contenido de la caja */
-  padding: 30px; 
-  margin-top: -80px; /* Eleva un poco el contenido sobre el backdrop */
-  position: relative; /* Asegura que el z-index funcione si es necesario */
-  z-index: 1; /* Asegura que esté por encima del backdrop */
+  padding: 40px;
+  background-color: var(--surface-color);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-top: -120px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 40px;
 }
 
-/* Estilos para la imagen del póster dentro del contenido */
-.details-content img {
+.details-content-poster img {
   width: 100%;
-  max-width: 280px; /* Un poco más grande para el póster principal */
+  max-width: 320px;
   height: auto;
-  margin-right: 30px; /* Más espacio a la derecha */
-  margin-bottom: 30px; /* Más espacio abajo */
-  border-radius: 8px; /* Bordes más redondeados */
-  float: left; /* Hace que el texto envuelva la imagen */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra más suave y extendida */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
 
-/* Estilos para el título de la película */
+.details-content-poster img:hover {
+  transform: scale(1.02);
+}
+
+.details-content-info {
+  flex-grow: 1;
+}
+
 .details-content h1 {
-  font-size: 2.5em; /* Título más grande */
-  margin-top: 0; /* Elimina el margen superior por defecto */
-  margin-bottom: 20px; /* Más espacio debajo del título */
-  color: #FFFFFF; /* Un azul más vibrante para el título */
-  text-align: left; /* Alinea el título a la izquierda */
-  line-height: 1.2;
+  font-size: 3em;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  text-align: left;
+  line-height: 1.1;
+  font-family: var(--font-heading);
+  letter-spacing: -0.03em;
 }
 
-/* Estilos para párrafos (sinopsis, rating, etc.) */
+.details-tagline {
+  color: var(--text-secondary);
+  font-size: 1.25em;
+  font-style: italic;
+  margin-bottom: 24px;
+  font-family: var(--font-body);
+}
+
 .details-content p {
-  margin-bottom: 10px; /* Espacio entre párrafos */
-  line-height: 1.7; /* Mayor interlineado para mejor legibilidad */
-  color: #e0e0e0; /* Texto más claro para el contenido */
-  text-align: left; /* Alinea el texto a la izquierda */
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  text-align: left;
+  font-size: 1.05em;
+  line-height: 1.6;
 }
 
-/* Estilos para el texto en negrita (ej. los labels "Rating:", "Sinopsis:") */
 .details-content p strong {
-  color: #bbbbbb; /* Un gris más claro para los labels */
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
-/* Estilo para el contenedor de géneros */
+.details-content .genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
 .details-content .genres span {
-  display: inline-block;
-  background-color: #007bff;
-  color: white;
-  padding: 5px 10px;
+  background-color: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--primary-color);
+  padding: 6px 14px;
   border-radius: 20px;
-  margin-right: 8px;
-  margin-bottom: 8px;
   font-size: 0.9em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
-
-/* Utilidad para limpiar floats (si la usas en JSX) */
-.clear-both {
-  clear: both;
-}
-
-
-/* --- Media Queries para hacer la página más responsiva --- */
 
 @media (max-width: 900px) {
-    .details-content img {
-        max-width: 200px; /* Reduce un poco el tamaño del póster */
-        margin-right: 20px;
-        margin-bottom: 20px;
-    }
-    .details-content h1 {
-        font-size: 2em;
-    }
+  .details-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .details-content-poster img {
+    max-width: 260px;
+  }
+  
+  .details-content h1 {
+    font-size: 2.5em;
+    text-align: center;
+  }
+  
+  .details-tagline, .details-content p {
+    text-align: center;
+  }
+  
+  .details-content .genres {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
   .backdrop {
-    height: 280px; /* Reduce la altura del fondo en pantallas más pequeñas */
-    padding: 10px; /* Ajusta el padding */
-    margin-bottom: 20px;
+    height: 350px;
+    border-radius: 0;
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
   }
   
   .details-content {
-    padding: 20px; /* Padding del contenido más uniforme */
-    margin-top: -50px; /* Eleva menos la caja */
-    border-radius: 0; /* Bordes rectos para móviles si quieres */
-  }
-
-  .details-content img {
-    float: none; /* Quita el float para que la imagen no envuelva texto en móviles */
-    margin: 0 auto 25px auto; /* Centra la imagen y añade margen inferior */
-    display: block; /* Asegura que la imagen ocupe su propia línea para centrarla */
-    max-width: 180px; /* Tamaño del póster para móviles */
-  }
-
-  .details-content h1,
-  .details-content p,
-  .details-content strong {
-    text-align: center; /* Centra todo el texto en móviles para una mejor presentación */
-  }
-  .details-content .genres {
-      text-align: center; /* Centra los géneros */
+    padding: 24px;
+    margin-top: -80px;
   }
 }
 
 @media (max-width: 480px) {
   .backdrop {
-    height: 200px;
+    height: 250px;
   }
-  .details-content {
-      padding: 15px;
+  
+  .details-content-poster img {
+    max-width: 180px;
   }
-  .details-content img {
-    max-width: 140px;
-  }
+  
   .details-content h1 {
-    font-size: 1.8em;
+    font-size: 2em;
   }
+}
+
+.favorite-btn-details {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.favorite-btn-details:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
 }
