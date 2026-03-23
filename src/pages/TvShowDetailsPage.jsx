@@ -1,135 +1,144 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-// Puedes reutilizar el mismo CSS de detalles de película si las clases son genéricas (.backdrop, .details-content, etc.)
-// Si quieres estilos específicos para series, crea TvShowDetailsPage.css e impórtalo.
-import './MovieDetailsPage.css'; // Reutilizamos el CSS de detalles de película por ahora
+import { UserContext } from '../context/UserContext';
+import CastSection from '../components/CastSection';
+import TrailerModal from '../components/TrailerModal';
+import SimilarContent from '../components/SimilarContent';
+import './MovieDetailsPage.css';
 
-// URL base para las imágenes de TMDB (igual que antes)
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const BACKDROP_SIZE = 'original';
 const POSTER_SIZE = 'w500';
 
-// Este componente mostrará detalles de una Serie de Televisión
-function TvShowDetailsPage() { // Cambia el nombre del componente
-  // Obtiene el parámetro 'id' de la URL (definido en App.jsx como /tv/:id)
+function TvShowDetailsPage() {
   const { id } = useParams();
+  const { toggleFavorite, isFavorite, toggleWatchlist, isInWatchlist } = useContext(UserContext);
 
-  // Estado para los detalles de la serie, carga y error
-  const [tvShowDetails, setTvShowDetails] = useState(null); // Cambia el nombre del estado
+  const [tvShowDetails, setTvShowDetails] = useState(null);
+  const [cast, setCast] = useState([]);
+  const [trailer, setTrailer] = useState(null);
+  const [showTrailer, setShowTrailer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    const baseUrl = 'https://api.themoviedb.org/3/tv/';
 
-    // --- MODIFICAR: URL de la API para obtener detalles de una SERIE específica por ID ---
-    // Cambia '/movie/' por '/tv/'
-    const API_URL = `https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`; // Ajusta el lenguaje si quieres
-
-    console.log("Realizando llamada a la API para detalles de serie:", API_URL);
-
-    const fetchTvShowDetails = async () => { // Cambia el nombre de la función
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(API_URL);
+        const detailsRes = await fetch(`${baseUrl}${id}?api_key=${apiKey}&language=en-US`);
+        if (!detailsRes.ok) throw new Error('Serie no encontrada.');
+        const detailsData = await detailsRes.json();
+        setTvShowDetails(detailsData);
 
-        if (!response.ok) {
-          if (response.status === 404) {
-             throw new Error("Serie no encontrada."); // Mensaje específico
-          }
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const creditsRes = await fetch(`${baseUrl}${id}/credits?api_key=${apiKey}`);
+        const creditsData = await creditsRes.json();
+        setCast(creditsData.cast || []);
 
-        const data = await response.json();
-        console.log("Detalles de serie recibidos:", data); // Log específico
-        setTvShowDetails(data); // Guarda los detalles en el estado correcto
+        const videosRes = await fetch(`${baseUrl}${id}/videos?api_key=${apiKey}`);
+        const videosData = await videosRes.json();
+        const mainTrailer = videosData.results.find(
+          v => v.type === 'Trailer' && v.site === 'YouTube'
+        ) || videosData.results[0];
+        setTrailer(mainTrailer);
+
         setLoading(false);
-
-      } catch (error) {
-        console.error("Error al obtener detalles de la serie:", error); // Log específico
-        setError(error.message || "No se pudieron cargar los detalles de la serie."); // Mensaje específico
+      } catch (err) {
+        console.error('Error fetching TV data:', err);
+        setError(err.message || 'No se pudieron cargar los detalles.');
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchTvShowDetails(); // Llama a la función
-    } else {
-       setError("ID de serie no proporcionado.");
-       setLoading(false);
-    }
+    if (id) fetchData();
+    window.scrollTo(0, 0);
+  }, [id]);
 
-  }, [id]); // Este efecto se re-ejecutará si el 'id' cambia
+  if (loading) return <div className="status-message">Cargando detalles de la serie...</div>;
+  if (error) return <div className="status-message error-message">Error: {error}</div>;
+  if (!tvShowDetails) return <div className="status-message">No se encontraron datos.</div>;
 
-  // Renderizado condicional
-  if (loading) {
-    return <div>Cargando detalles de la serie...</div>; // Mensaje específico
-  }
+  const isFav = isFavorite(tvShowDetails.id);
+  const isWatch = isInWatchlist(tvShowDetails.id);
 
-  if (error) {
-    return <div style={{ color: 'red' }}>Error: {error}</div>;
-  }
-
-  if (!tvShowDetails) { // Verifica el estado correcto
-      return <div>No se encontraron datos para esta serie.</div>; // Mensaje específico
-  }
-
-
-  // --- MODIFICAR: Mostrar los detalles de la SERIE ---
-  // Los nombres de las propiedades son diferentes
   return (
-    <div className="movie-details-page"> {/* Puedes mantener la clase CSS si los estilos son genéricos */}
+    <div className="movie-details-page">
       {tvShowDetails.backdrop_path && (
-          <div className="backdrop" style={{
-              backgroundImage: `url(${TMDB_IMAGE_BASE_URL}${BACKDROP_SIZE}${tvShowDetails.backdrop_path})`, // Usa tvShowDetails
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              height: '400px',
-              position: 'relative',
-              color: 'white',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'flex-end',
-              padding: '20px'
-          }}>
-          </div>
+        <div className="backdrop" style={{
+          backgroundImage: `url(${TMDB_IMAGE_BASE_URL}${BACKDROP_SIZE}${tvShowDetails.backdrop_path})`,
+        }} />
       )}
 
-      <div className="details-content" style={{ padding: '20px' }}>
-         {!tvShowDetails.backdrop_path && tvShowDetails.poster_path && (
-              <img
-                src={`${TMDB_IMAGE_BASE_URL}${POSTER_SIZE}${tvShowDetails.poster_path}`} // Usa tvShowDetails
-                alt={`Poster of ${tvShowDetails.name}`} // USA .name para el título de la serie
-                style={{ float: 'left', marginRight: '20px', marginBottom: '20px', width: '200px' }}
-              />
-         )}
+      <div className="details-content">
+        <div className="details-content-poster">
+          <img
+            src={
+              tvShowDetails.poster_path
+                ? `${TMDB_IMAGE_BASE_URL}${POSTER_SIZE}${tvShowDetails.poster_path}`
+                : 'https://via.placeholder.com/500x750?text=No+Poster'
+            }
+            alt={`Poster of ${tvShowDetails.name}`}
+          />
+        </div>
 
-        {/* --- PROPIEDADES ESPECÍFICAS DE SERIE --- */}
-        <h1>{tvShowDetails.name}</h1> {/* USA .name para el título */}
-        <p><strong>Rating:</strong> {tvShowDetails.vote_average ? tvShowDetails.vote_average.toFixed(1) : 'N/A'}</p>
-        <p><strong>Fecha de Primera Emisión:</strong> {tvShowDetails.first_air_date || 'N/A'}</p> {/* USA .first_air_date */}
-        <p><strong>Número de Temporadas:</strong> {tvShowDetails.number_of_seasons || 'N/A'}</p> {/* Propiedad de Serie */}
-        <p><strong>Número de Episodios:</strong> {tvShowDetails.number_of_episodes || 'N/A'}</p> {/* Propiedad de Serie */}
-         {tvShowDetails.episode_run_time && tvShowDetails.episode_run_time.length > 0 && (
-             <p><strong>Duración Promedio del Episodio:</strong> {tvShowDetails.episode_run_time[0]} minutos</p> 
-         )}
+        <div className="details-content-info">
+          <div className="details-header-actions">
+            <h1>{tvShowDetails.name}</h1>
+            <div className="action-buttons">
+              {trailer && (
+                <button className="trailer-btn" onClick={() => setShowTrailer(true)}>
+                  ▶ Ver Trailer
+                </button>
+              )}
+              <button 
+                className={`favorite-btn-details ${isFav ? 'active' : ''}`} 
+                onClick={() => toggleFavorite(tvShowDetails)}
+                title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
+              >
+                {isFav ? '❤️' : '🤍'}
+              </button>
+              <button 
+                className={`favorite-btn-details watchlist-btn-details ${isWatch ? 'active' : ''}`} 
+                onClick={() => toggleWatchlist(tvShowDetails)}
+                title={isWatch ? "Quitar de Ver más tarde" : "Añadir a Ver más tarde"}
+              >
+                {isWatch ? '🔖' : '📑'}
+              </button>
+            </div>
+          </div>
 
+          {tvShowDetails.tagline && (
+            <p className="details-tagline">"{tvShowDetails.tagline}"</p>
+          )}
 
-        <p><strong>Sinopsis:</strong> {tvShowDetails.overview || 'Sin sinopsis disponible.'}</p> {/* overview es igual */}
+          {tvShowDetails.genres && tvShowDetails.genres.length > 0 && (
+            <div className="genres">
+              {tvShowDetails.genres.map(genre => (
+                <span key={genre.id}>{genre.name}</span>
+              ))}
+            </div>
+          )}
 
+          <p><strong>Rating:</strong> {tvShowDetails.vote_average ? tvShowDetails.vote_average.toFixed(1) : 'N/A'} / 10</p>
+          <p><strong>Primera Emisión:</strong> {tvShowDetails.first_air_date || 'N/A'}</p>
+          <p><strong>Temporadas:</strong> {tvShowDetails.number_of_seasons || 'N/A'}</p>
+          <p><strong>Episodios:</strong> {tvShowDetails.number_of_episodes || 'N/A'}</p>
+          
+          <p><strong>Sinopsis:</strong><br />{tvShowDetails.overview || 'Sin sinopsis disponible.'}</p>
 
-        {tvShowDetails.genres && tvShowDetails.genres.length > 0 && (
-            <p><strong>Géneros:</strong> {tvShowDetails.genres.map(genre => genre.name).join(', ')}</p> 
-        )}
-
-         {tvShowDetails.networks && tvShowDetails.networks.length > 0 && (
-             <p><strong>Cadenas:</strong> {tvShowDetails.networks.map(network => network.name).join(', ')}</p> 
-         )}
-
-
-         <div style={{ clear: 'both' }}></div>
+          <CastSection cast={cast} />
+        </div>
       </div>
+
+      <SimilarContent type="tv" id={id} />
+
+      {showTrailer && trailer && (
+        <TrailerModal videoKey={trailer.key} onClose={() => setShowTrailer(false)} />
+      )}
     </div>
   );
 }
 
-export default TvShowDetailsPage; // Exporta el componente con el nuevo nombre
+export default TvShowDetailsPage;

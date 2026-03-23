@@ -1,96 +1,74 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom'; // Hook para obtener parámetros de la URL
-import { FavoritesContext } from '../context/FavoritesContext';
-import './MovieDetailsPage.css'; // Asegúrate de crear este archivo para los estilos
-// URL base para las imágenes de TMDB (la necesitamos aquí también)
+import { useParams } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
+import CastSection from '../components/CastSection';
+import TrailerModal from '../components/TrailerModal';
+import SimilarContent from '../components/SimilarContent';
+import './MovieDetailsPage.css';
+
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
-const BACKDROP_SIZE = 'original'; // O un tamaño grande como 'w1280'
+const BACKDROP_SIZE = 'original';
 const POSTER_SIZE = 'w500';
 
 function MovieDetailsPage() {
-  // Obtiene el parámetro 'id' de la URL (definido en App.jsx como /movie/:id)
   const { id } = useParams();
-  const { toggleFavorite, isFavorite } = useContext(FavoritesContext);
+  const { toggleFavorite, isFavorite, toggleWatchlist, isInWatchlist } = useContext(UserContext);
 
-  // Estado para los detalles de la película, carga y error
   const [movieDetails, setMovieDetails] = useState(null);
+  const [cast, setCast] = useState([]);
+  const [trailer, setTrailer] = useState(null);
+  const [showTrailer, setShowTrailer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Obtén la clave API
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    const baseUrl = 'https://api.themoviedb.org/3/movie/';
 
-    // URL de la API para obtener detalles de una película específica por ID
-    const API_URL = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`; // Ajusta el lenguaje si quieres
-
-    console.log("Realizando llamada a la API para detalles:", API_URL);
-
-    const fetchMovieDetails = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(API_URL);
+        const detailsRes = await fetch(`${baseUrl}${id}?api_key=${apiKey}&language=en-US`);
+        if (!detailsRes.ok) throw new Error('Película no encontrada.');
+        const detailsData = await detailsRes.json();
+        setMovieDetails(detailsData);
 
-        if (!response.ok) {
-          // Si es un 404, la película no se encontró
-          if (response.status === 404) {
-             throw new Error("Película no encontrada.");
-          }
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const creditsRes = await fetch(`${baseUrl}${id}/credits?api_key=${apiKey}`);
+        const creditsData = await creditsRes.json();
+        setCast(creditsData.cast || []);
 
-        const data = await response.json();
-        console.log("Detalles de película recibidos:", data);
-        setMovieDetails(data); // Guarda todos los detalles
+        const videosRes = await fetch(`${baseUrl}${id}/videos?api_key=${apiKey}`);
+        const videosData = await videosRes.json();
+        const mainTrailer = videosData.results.find(
+          v => v.type === 'Trailer' && v.site === 'YouTube'
+        ) || videosData.results[0];
+        setTrailer(mainTrailer);
+
         setLoading(false);
-
-      } catch (error) {
-        console.error("Error al obtener detalles de la película:", error);
-        setError(error.message || "No se pudieron cargar los detalles de la película.");
+      } catch (err) {
+        console.error('Error fetching movie data:', err);
+        setError(err.message || 'No se pudieron cargar los detalles.');
         setLoading(false);
       }
     };
 
-    // Asegúrate de que hay un ID antes de intentar fetchear
-    if (id) {
-      fetchMovieDetails();
-    } else {
-       // Si por alguna razón no hay ID en la URL (no debería pasar con la ruta configurada)
-       setError("ID de película no proporcionado.");
-       setLoading(false);
-    }
+    if (id) fetchData();
+    window.scrollTo(0, 0);
+  }, [id]);
 
-  }, [id]); // Este efecto se re-ejecutará si el 'id' en la URL cambia
+  if (loading) return <div className="status-message">Cargando detalles de la película...</div>;
+  if (error) return <div className="status-message error-message">Error: {error}</div>;
+  if (!movieDetails) return <div className="status-message">No se encontraron datos.</div>;
 
-  // Renderizado condicional
-  if (loading) {
-    return <div>Cargando detalles de la película...</div>;
-  }
+  const isFav = isFavorite(movieDetails.id);
+  const isWatch = isInWatchlist(movieDetails.id);
 
-  if (error) {
-    return <div style={{ color: 'red' }}>Error: {error}</div>;
-  }
-
-  // Si ya cargó y no hay error, y movieDetails no es null
-  if (!movieDetails) {
-      return <div>No se encontraron datos para esta película.</div>;
-  }
-
-  const handleFavoriteClick = () => {
-    toggleFavorite(movieDetails);
-  };
-  const favIcon = isFavorite(movieDetails.id) ? '❤️' : '🤍';
-
-  // Mostrar los detalles de la película
   return (
     <div className="movie-details-page">
-      {/* Puedes usar el 'backdrop_path' para un fondo grande o el 'poster_path' */}
       {movieDetails.backdrop_path && (
-          <div className="backdrop" style={{
-              backgroundImage: `url(${TMDB_IMAGE_BASE_URL}${BACKDROP_SIZE}${movieDetails.backdrop_path})`,
-          }}>
-              {/* Podrías poner el título o un poster pequeño superpuesto aquí */}
-              {/* <h2>{movieDetails.title}</h2> */}
-          </div>
+        <div className="backdrop" style={{
+          backgroundImage: `url(${TMDB_IMAGE_BASE_URL}${BACKDROP_SIZE}${movieDetails.backdrop_path})`,
+        }} />
       )}
 
       <div className="details-content">
@@ -101,12 +79,31 @@ function MovieDetailsPage() {
           />
         </div>
         <div className="details-content-info">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div className="details-header-actions">
             <h1>{movieDetails.title}</h1>
-            <button className="favorite-btn-details" onClick={handleFavoriteClick}>
-              {favIcon}
-            </button>
+            <div className="action-buttons">
+              {trailer && (
+                <button className="trailer-btn" onClick={() => setShowTrailer(true)}>
+                  ▶ Ver Trailer
+                </button>
+              )}
+              <button 
+                className={`favorite-btn-details ${isFav ? 'active' : ''}`} 
+                onClick={() => toggleFavorite(movieDetails)}
+                title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
+              >
+                {isFav ? '❤️' : '🤍'}
+              </button>
+              <button 
+                className={`favorite-btn-details watchlist-btn-details ${isWatch ? 'active' : ''}`} 
+                onClick={() => toggleWatchlist(movieDetails)}
+                title={isWatch ? "Quitar de Ver más tarde" : "Añadir a Ver más tarde"}
+              >
+                {isWatch ? '🔖' : '📑'}
+              </button>
+            </div>
           </div>
+          
           {movieDetails.tagline && <p className="details-tagline">{movieDetails.tagline}</p>}
           
           {movieDetails.genres && movieDetails.genres.length > 0 && (
@@ -120,8 +117,16 @@ function MovieDetailsPage() {
           <p><strong>Rating:</strong> {movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A'}</p>
           <p><strong>Fecha de Estreno:</strong> {movieDetails.release_date || 'N/A'}</p>
           <p><strong>Sinopsis:</strong> <br/> {movieDetails.overview || 'Sin sinopsis disponible.'}</p>
+          
+          <CastSection cast={cast} />
         </div>
       </div>
+
+      <SimilarContent type="movie" id={id} />
+
+      {showTrailer && trailer && (
+        <TrailerModal videoKey={trailer.key} onClose={() => setShowTrailer(false)} />
+      )}
     </div>
   );
 }

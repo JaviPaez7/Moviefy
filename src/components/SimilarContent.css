@@ -1,0 +1,56 @@
+/* src/components/SimilarContent.css */
+
+.similar-content-section {
+  margin-top: 50px;
+  width: 100%;
+  padding-bottom: 40px;
+  border-top: 1px solid var(--card-border);
+  padding-top: 40px;
+}
+
+.similar-title {
+  text-align: left;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  color: var(--text-primary);
+}
+
+.similar-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--surface-color-solid);
+}
+
+.similar-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.similar-scroll::-webkit-scrollbar-track {
+  background: var(--surface-color-solid);
+  border-radius: 10px;
+}
+
+.similar-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+.similar-card-wrapper {
+  flex: 0 0 220px; /* Tamaño fijo para las cards en el scroll */
+  transition: transform 0.3s ease;
+}
+
+.similar-loading {
+  padding: 40px 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .similar-card-wrapper {
+    flex: 0 0 180px;
+  }
+}

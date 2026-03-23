@@ -1,54 +1,86 @@
-import React, { useState, useEffect } from "react";
-// Ya no necesitamos estilos específicos aquí si usamos los del Header, pero dejamos el import si hay algo extra.
+import React, { useState, useEffect, useRef } from "react";
+import SearchSuggestions from "./SearchSuggestions";
 import "./SearchBar.css";
 
 function SearchBar({ onSearch }) {
-  const [query, setQuery] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchBarRef = useRef(null);
 
   useEffect(() => {
-    if (!query.trim()) return; 
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    
+    if (searchTerm.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
 
-    setIsTyping(true);
-    const timeout = setTimeout(() => {
-      onSearch(query.trim());
-      setIsTyping(false);
-    }, 500);
+    const timer = setTimeout(async () => {
+      try {
+        const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(searchTerm)}&page=1&include_adult=false`;
+        const response = await fetch(url);
+        const data = await response.json();
+        // Filtramos solo películas y series (TMDB multi search de veces incluye personas)
+        const filtered = data.results
+          ? data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv').slice(0, 8)
+          : [];
+        setSuggestions(filtered);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    }, 400); // 400ms debounce
 
-    return () => clearTimeout(timeout);
-  }, [query, onSearch]);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-  const handleInputChange = (event) => {
-    setQuery(event.target.value);
-  };
+  // Cerrar sugerencias al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (query.trim()) {
-      onSearch(query.trim());
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      onSearch(searchTerm.trim());
+      setShowSuggestions(false);
     }
   };
 
+  const handleSuggestionSelect = () => {
+    setShowSuggestions(false);
+    setSearchTerm("");
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="search-form" role="search">
-      <label htmlFor="search" className="visually-hidden">
-        Buscar películas o series
-      </label>
-      <input
-        id="search"
-        type="text"
-        className="search-input"
-        placeholder="Buscar..."
-        value={query}
-        onChange={handleInputChange}
-        aria-label="Buscar películas o series"
-        autoFocus
-        onFocus={(e) => e.target.select()}
+    <div className="search-bar-wrapper" ref={searchBarRef}>
+      <form onSubmit={handleSubmit} className="search-bar">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          className="search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => searchTerm.trim().length >= 2 && setShowSuggestions(true)}
+        />
+        <button type="submit" className="search-button">
+          Buscar
+        </button>
+      </form>
+      
+      <SearchSuggestions 
+        suggestions={suggestions} 
+        isVisible={showSuggestions} 
+        onSelect={handleSuggestionSelect}
       />
-      <button type="submit" className="search-button" disabled={!query.trim() || isTyping}>
-        {isTyping ? "..." : "Buscar"}
-      </button>
-    </form>
+    </div>
   );
 }
 

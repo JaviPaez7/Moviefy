@@ -1,29 +1,51 @@
 /* src/App.css */
 
 :root {
-  /* Color Palette */
-  --bg-color: #0f172a; /* Deep slate background */
-  --surface-color: rgba(30, 41, 59, 0.7); /* Glassmorphic surface */
-  --surface-color-solid: #1e293b; 
-  --primary-color: #3b82f6; /* Vibrant blue accent */
-  --primary-hover: #2563eb;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  
-  /* Layout */
+  /* Layout & Fonts (Shared) */
   --max-width: 1400px;
-  
-  /* Fonts */
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Inter', sans-serif;
+  --primary-color: #3b82f6; 
+  --primary-hover: #2563eb;
+  
+  /* Transition speed */
+  --theme-transition: all 0.3s ease;
 }
 
-/* --- Reset básico --- */
+/* --- Dark Theme Variables --- */
+.dark-theme {
+  --bg-color: #0f172a;
+  --surface-color: rgba(30, 41, 59, 0.7);
+  --surface-color-solid: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --card-border: rgba(255, 255, 255, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --gradient-overlay: linear-gradient(to top, #0f172a 0%, transparent 80%);
+  --skeleton-bg: rgba(255, 255, 255, 0.04);
+  --skeleton-shimmer: rgba(255, 255, 255, 0.10);
+}
+
+/* --- Light Theme Variables --- */
+.light-theme {
+  --bg-color: #f1f5f9;
+  --surface-color: rgba(255, 255, 255, 0.8);
+  --surface-color-solid: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --card-border: rgba(0, 0, 0, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --gradient-overlay: linear-gradient(to top, #f1f5f9 0%, transparent 80%);
+  --skeleton-bg: rgba(0, 0, 0, 0.05);
+  --skeleton-shimmer: rgba(0, 0, 0, 0.10);
+}
+
+/* --- Reset & Global Styles --- */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-html, body {
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -32,9 +54,15 @@ html, body {
   background-color: var(--bg-color);
   color: var(--text-primary);
   overflow-x: hidden;
-  /* Add subtle background pattern or gradient */
-  background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 400px),
-                    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.05), transparent 400px);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Subtle background pattern adjusted for theme */
+body.dark-theme {
+  background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 400px);
+}
+body.light-theme {
+  background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent 400px);
 }
 
 #root, .App {
@@ -66,9 +94,8 @@ h1, h2, h3, h4, h5, h6 {
   padding: 40px 20px;
   font-size: 1.25em;
   color: var(--text-secondary);
-  font-family: var(--font-body);
 }
 
-.status-message.error-message {
-  color: #ef4444; /* Red for errors */
-}
+.error-message {
+  color: #ef4444;
+}

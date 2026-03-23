@@ -1,29 +1,78 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom"; // Link para navegar, useNavigate para la búsqueda
-import SearchBar from "./SearchBar"; // Importa el componente SearchBar
-import "./Header.css"; // Asegúrate de tener un archivo CSS para estilizar el header
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
+import ThemeToggle from "./ThemeToggle";
+import "./Header.css";
 
 function Header() {
-  const navigate = useNavigate(); // Para navegar a la página de resultados
+  const navigate = useNavigate();
+  const [isSurprising, setIsSurprising] = useState(false);
 
-  // Función que SearchBar llamará al enviar la búsqueda
   const handleSearch = (searchTerm) => {
-    console.log("Buscando:", searchTerm);
-    // Navega a la página de resultados de búsqueda, pasando el término en la URL
     navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
+  };
+
+  const handleSurpriseMe = async () => {
+    setIsSurprising(true);
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    
+    try {
+      // Elegimos una página aleatoria de populares (1-5)
+      const randomPage = Math.floor(Math.random() * 5) + 1;
+      const type = Math.random() > 0.5 ? 'movie' : 'tv';
+      const response = await fetch(
+        `https://api.themoviedb.org/3/${type}/popular?api_key=${apiKey}&language=en-US&page=${randomPage}`
+      );
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        const randomIndex = Math.floor(Math.random() * data.results.length);
+        const randomItem = data.results[randomIndex];
+        
+        // Pequeña pausa para efecto dramático
+        setTimeout(() => {
+          navigate(`/${type}/${randomItem.id}`);
+          setIsSurprising(false);
+        }, 600);
+      }
+    } catch (error) {
+      console.error("Error in Surprise Me:", error);
+      setIsSurprising(false);
+    }
   };
 
   return (
     <header className="header">
-      <div className="site-title">
-        <Link to="/">Moviefy</Link>
-      </div>
-      <nav className="main-nav">
-        <SearchBar onSearch={handleSearch} />
-        <Link to="/favorites" className="favorites-link">
-          ❤️ Favoritos
+      <div className="header-container">
+        <Link to="/" className="logo">
+          Moviefy
         </Link>
-      </nav>
+        <div className="header-actions">
+          <SearchBar onSearch={handleSearch} />
+          
+          <button 
+            className={`surprise-btn ${isSurprising ? 'loading' : ''}`} 
+            onClick={handleSurpriseMe}
+            title="¡Sorpréndeme! (Recomendación aleatoria)"
+            disabled={isSurprising}
+          >
+            {isSurprising ? '🎲...' : '🎲'}
+          </button>
+
+          <nav className="header-nav">
+            <Link to="/favorites" className="nav-link fav-link">
+              <span className="nav-icon">❤️</span>
+              <span className="nav-text">Favoritos</span>
+            </Link>
+            <Link to="/watchlist" className="nav-link watch-link">
+              <span className="nav-icon">🔖</span>
+              <span className="nav-text">Pendientes</span>
+            </Link>
+          </nav>
+          
+          <ThemeToggle />
+        </div>
+      </div>
     </header>
   );
 }

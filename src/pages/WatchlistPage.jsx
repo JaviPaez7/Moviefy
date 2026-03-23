@@ -2,20 +2,20 @@ import React, { useContext } from 'react';
 import { UserContext } from '../context/UserContext';
 import MovieCard from '../components/MovieCard';
 
-function FavoritesPage() {
-  const { favorites } = useContext(UserContext);
+function WatchlistPage() {
+  const { watchlist } = useContext(UserContext);
 
   return (
     <div className="favorites-page">
-      <h1>Mis Películas y Series Favoritas</h1>
+      <h1>Mi Lista de Seguimiento (Ver más tarde)</h1>
       
-      {favorites.length === 0 ? (
+      {watchlist.length === 0 ? (
         <div className="status-message">
-          <p>Aún no tienes favoritos. ¡Explora y añade algunos!</p>
+          <p>Tu lista está vacía. ¡Añade lo que quieras ver más tarde!</p>
         </div>
       ) : (
         <div className="movies-list">
-          {favorites.map((item) => (
+          {watchlist.map((item) => (
             <MovieCard key={item.id} item={item} />
           ))}
         </div>
@@ -24,4 +24,4 @@ function FavoritesPage() {
   );
 }
 
-export default FavoritesPage;
+export default WatchlistPage;

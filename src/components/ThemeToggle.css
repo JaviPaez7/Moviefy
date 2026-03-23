@@ -1,0 +1,67 @@
+/* src/components/ThemeToggle.css */
+
+.theme-toggle-btn {
+  background: var(--surface-color-solid);
+  border: 1px solid var(--card-border);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  padding: 0;
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+  box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+.icon-wrapper {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sun-icon, .moon-icon {
+  position: absolute;
+  font-size: 1.4em;
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+/* Dark mode state: show moon, hide sun */
+.theme-toggle-btn.dark .sun-icon {
+  opacity: 0;
+  transform: translateY(30px) rotate(180deg);
+}
+.theme-toggle-btn.dark .moon-icon {
+  opacity: 1;
+  transform: translateY(0) rotate(0);
+}
+
+/* Light mode state: show sun, hide moon */
+.theme-toggle-btn.light .sun-icon {
+  opacity: 1;
+  transform: translateY(0) rotate(0);
+}
+.theme-toggle-btn.light .moon-icon {
+  opacity: 0;
+  transform: translateY(-30px) rotate(-180deg);
+}
+
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+}

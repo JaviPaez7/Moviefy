@@ -2,3 +2,8 @@
   position: absolute;
   left: -9999px;
 }
+
+.search-bar-wrapper {
+  position: relative;
+  width: auto;
+}

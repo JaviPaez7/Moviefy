@@ -1,134 +1,183 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import MovieCard from '../components/MovieCard';
-import './HomePage.css';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import MovieCard from "../components/MovieCard";
+import GenreFilter from "../components/GenreFilter";
+import SkeletonCard from "../components/SkeletonCard";
+import "./HomePage.css";
+
+const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 
 function HomePage() {
-  const [contentType, setContentType] = useState('movie'); // 'movie' or 'tv'
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  const [heroMovie, setHeroMovie] = useState(null);
-  
+  const [heroItem, setHeroItem] = useState(null);
+  const [contentType, setContentType] = useState("movie"); // 'movie' or 'tv'
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [sortBy, setSortBy] = useState("popularity.desc");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Use a ref to attach to the last element we want to observe
-  const observer = useRef();
-  
-  const lastElementRef = useCallback(node => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
-      }
-    });
-    
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
+  const loaderRef = useRef(null);
 
-  // Si cambiamos de pestaña (Películas <-> Series), hay que resetear la paginación y la lista
-  const handleTabChange = (type) => {
-    if (contentType === type) return; // Ya estamos en esta pestaña
-    setContentType(type);
-    setItems([]);
-    setPage(1);
-    setHasMore(true);
-    setHeroMovie(null); // Opcional: limpiar o no el banner al cambiar
-  };
-
+  // Fetch Hero Item (Solo una vez al cargar)
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-    const API_URL = `https://api.themoviedb.org/3/${contentType}/popular?api_key=${apiKey}&language=en-US&page=${page}`;
+    fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.results && data.results.length > 0) {
+          setHeroItem(data.results[0]);
+        }
+      })
+      .catch(err => console.error("Error fetching hero:", err));
+  }, []);
 
-    const fetchContent = async () => {
+  const fetchItems = useCallback(async (isNextPage = false) => {
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    const currentPage = isNextPage ? page + 1 : 1;
+    
+    if (!isNextPage) {
       setLoading(true);
-      setError(null);
+      setIsInitialLoad(true);
+    }
 
-      try {
-        const response = await fetch(API_URL);
-
-        if (!response.ok) {
-          throw new Error('Error al obtener los datos');
-        }
-
-        const data = await response.json();
-
-        setItems(prev => {
-          if (page === 1 && data.results.length > 0) {
-            setHeroMovie(data.results[0]); 
-          }
-          return [...prev, ...data.results];
-        });
-
-        if (data.results.length === 0 || data.page >= data.total_pages) {
-          setHasMore(false);
-        }
-
-      } catch (error) {
-        console.error("Error:", error);
-        setError("No se pudieron cargar los datos.");
-      } finally {
-        setLoading(false);
+    try {
+      let url = `https://api.themoviedb.org/3/discover/${contentType}?api_key=${apiKey}&language=en-US&sort_by=${sortBy}&page=${currentPage}&include_adult=false`;
+      
+      if (selectedGenre) {
+        url += `&with_genres=${selectedGenre}`;
       }
-    };
 
-    fetchContent();
-  }, [contentType, page]); 
+      const response = await fetch(url);
+      const data = await response.json();
 
+      if (data.results) {
+        setItems(prev => isNextPage ? [...prev, ...data.results] : data.results);
+        setHasMore(data.page < data.total_pages);
+        setPage(currentPage);
+      }
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    } finally {
+      setLoading(false);
+      setIsInitialLoad(false);
+    }
+  }, [contentType, selectedGenre, sortBy, page]);
+
+  useEffect(() => {
+    fetchItems(false);
+  }, [contentType, selectedGenre, sortBy]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          fetchItems(true);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchItems, hasMore, loading]);
+
+  const handleTypeChange = (type) => {
+    if (type !== contentType) {
+      setContentType(type);
+      setSelectedGenre(null);
+      setPage(1);
+      setItems([]);
+    }
+  };
+
+  const handleGenreSelect = (genreId) => {
+    setSelectedGenre(genreId);
+    setPage(1);
+    setItems([]);
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+    setPage(Page => 1);
+    setItems([]);
+  };
 
   return (
-    <div className="homepage">
-      {/* Banner Principal (Hero) */}
-      {heroMovie && (
-        <div className="hero-banner" style={{
-          backgroundImage: `url(https://image.tmdb.org/t/p/original${heroMovie.backdrop_path})`
-        }}>
+    <div className="home-page">
+      {heroItem && (
+        <section 
+          className="hero-banner" 
+          style={{ backgroundImage: `url(${TMDB_IMAGE_BASE_URL}original${heroItem.backdrop_path})` }}
+        >
           <div className="hero-content">
-            <h2>{heroMovie.title || heroMovie.name}</h2>
-            <p>{heroMovie.overview}</p>
+            <h1>{heroItem.title || heroItem.name}</h1>
+            <p>{heroItem.overview}</p>
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Tabs Selector */}
-      <div className="content-tabs">
-        <button 
-          className={`tab-btn ${contentType === 'movie' ? 'active' : ''}`} 
-          onClick={() => handleTabChange('movie')}
-        >
-          🎬 Películas
-        </button>
-        <button 
-          className={`tab-btn ${contentType === 'tv' ? 'active' : ''}`} 
-          onClick={() => handleTabChange('tv')}
-        >
-          📺 Series
-        </button>
+      <div className="content-filters">
+        <div className="type-toggle">
+          <button 
+            className={contentType === "movie" ? "active" : ""} 
+            onClick={() => handleTypeChange("movie")}
+          >
+            🎬 Películas
+          </button>
+          <button 
+            className={contentType === "tv" ? "active" : ""} 
+            onClick={() => handleTypeChange("tv")}
+          >
+            📺 Series
+          </button>
+        </div>
+
+        <div className="sort-filter">
+          <label htmlFor="sort-select">Ordenar por:</label>
+          <select id="sort-select" value={sortBy} onChange={handleSortChange}>
+            <option value="popularity.desc">Más Populares</option>
+            <option value="vote_average.desc">Mejor Valoradas</option>
+            <option value="primary_release_date.desc">Más Recientes</option>
+            <option value="revenue.desc">Más Taquilleras</option>
+          </select>
+        </div>
       </div>
 
-      <h1 className="section-title">
-        {contentType === 'movie' ? 'Películas Populares' : 'Series Populares'}
-      </h1>
+      <GenreFilter 
+        type={contentType} 
+        onGenreSelect={handleGenreSelect} 
+        selectedGenre={selectedGenre} 
+      />
 
-      {error && <div className="status-message error-message">Error: {error}</div>}
-      {!loading && !error && items.length === 0 && <div className="status-message">No hay contenido disponible.</div>}
+      <h2 className="section-title">
+        {selectedGenre ? "Resultados Filtrados" : contentType === "movie" ? "Películas Populares" : "Series Populares"}
+      </h2>
 
-      <div className="movies-list"> 
-        {items.filter(item => item != null).map((item, index) => {
-          // El último elemento activa el Intersection Observer
-          if (items.length === index + 1) {
-            return <div ref={lastElementRef} key={`${contentType}-${item.id}-${index}`}><MovieCard item={item} /></div>
-          } else {
-            return <MovieCard key={`${contentType}-${item.id}-${index}`} item={item} />
-          }
-        })}
+      <div className="movies-list">
+        {isInitialLoad && items.length === 0 ? (
+          Array.from({ length: 10 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))
+        ) : (
+          items.map((item) => (
+            <MovieCard key={`${item.id}-${item.release_date || item.first_air_date}`} item={item} />
+          ))
+        )}
+        
+        {loading && !isInitialLoad && (
+          Array.from({ length: 5 }).map((_, index) => (
+            <SkeletonCard key={`more-${index}`} />
+          ))
+        )}
       </div>
-      
-      {loading && <div className="status-message">Cargando más resultados...</div>}
 
+      <div ref={loaderRef} className="infinite-loader">
+        {hasMore && !loading && <p className="status-message">Cargando más contenido...</p>}
+      </div>
     </div>
   );
 }

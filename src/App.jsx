@@ -1,37 +1,43 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./components/Header"; // Importa el Header
+import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
 import MovieDetailsPage from "./pages/MovieDetailsPage";
-import SearchResultsPage from "./pages/SearchResultsPage"; // Importa la página de resultados
+import SearchResultsPage from "./pages/SearchResultsPage";
 import TvShowDetailsPage from "./pages/TvShowDetailsPage";
-import FavoritesPage from "./pages/FavoritesPage"; // Nueva página
+import PersonDetailsPage from "./pages/PersonDetailsPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import WatchlistPage from "./pages/WatchlistPage";
 import Footer from "./components/Footer";
-import { FavoritesProvider } from "./context/FavoritesContext";
-import "./App.css"; // Asegúrate de tener un archivo CSS para estilizar la App
+import ScrollToTop from "./components/ScrollToTop";
+import { UserProvider } from "./context/UserContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import "./App.css";
 
 function App() {
   return (
-    <FavoritesProvider>
-      <BrowserRouter>
-        <div className="App">
-          <Header /> {/* El Header se muestra en todas las rutas */}
-          <div className="main-content-wrapper">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/movie/:id" element={<MovieDetailsPage />} />
-              {/* Nueva ruta para los resultados de búsqueda */}
-              <Route path="/search" element={<SearchResultsPage />} />
-              {/* Ruta de favoritos */}
-              <Route path="/favorites" element={<FavoritesPage />} />
-              {/* Aquí añadirías otras rutas, ej. /tv/:id si añades series */}
-              <Route path="/tv/:id" element={<TvShowDetailsPage />} />
-            </Routes>
+    <ThemeProvider>
+      <UserProvider>
+        <BrowserRouter>
+          <div className="App">
+            <Header />
+            <div className="main-content-wrapper">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/movie/:id" element={<MovieDetailsPage />} />
+                <Route path="/tv/:id" element={<TvShowDetailsPage />} />
+                <Route path="/person/:id" element={<PersonDetailsPage />} />
+                <Route path="/search" element={<SearchResultsPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/watchlist" element={<WatchlistPage />} />
+              </Routes>
+            </div>
+            <Footer />
+            <ScrollToTop />
           </div>
-          <Footer /> {/* El Footer se muestra en todas las rutas */}
-        </div>
-      </BrowserRouter>
-    </FavoritesProvider>
+        </BrowserRouter>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 
