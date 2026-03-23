@@ -168,28 +168,58 @@
 
 @media (max-width: 768px) {
   .header-container {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
+    padding: 10px var(--mobile-padding);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
-  .logo {
-    order: 1;
+  .logo { 
+    order: 1; 
+    font-size: 1.5em; 
+    width: 100%; 
+    text-align: center; 
+    margin-right: 0;
   }
 
-  .theme-toggle-btn {
-    order: 2;
+  .theme-toggle-btn { 
+    position: absolute; 
+    top: 12px; 
+    right: 15px; 
   }
 
   .search-bar-wrapper {
-    order: 4;
+    order: 2;
     width: 100%;
     max-width: none;
+    margin: 4px 0;
   }
 
   .header-actions {
     order: 3;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .header-nav {
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    gap: 10px;
+  }
+  
+  .nav-link {
+    padding: 7px 10px;
+    font-size: 0.85em;
+  }
+  
+  .surprise-btn, .theme-toggle-btn {
+    width: 38px;
+    height: 38px;
   }
 }

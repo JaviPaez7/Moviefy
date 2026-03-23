@@ -21,13 +21,13 @@ function PersonDetailsPage() {
       setLoading(true);
       try {
         // Person Details
-        const personRes = await fetch(`${baseUrl}${id}?api_key=${apiKey}&language=en-US`);
+        const personRes = await fetch(`${baseUrl}${id}?api_key=${apiKey}&language=es-ES`);
         if (!personRes.ok) throw new Error('Actor no encontrado.');
         const personData = await personRes.json();
         setPerson(personData);
 
         // Combined Credits (Movies & TV)
-        const creditsRes = await fetch(`${baseUrl}${id}/combined_credits?api_key=${apiKey}&language=en-US`);
+        const creditsRes = await fetch(`${baseUrl}${id}/combined_credits?api_key=${apiKey}&language=es-ES`);
         const creditsData = await creditsRes.json();
         
         // Ordenamos por popularidad y tomamos los top 20

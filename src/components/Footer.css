@@ -1,36 +1,106 @@
-/* src/components/Footer.css */
-
 .footer {
-  background-color: #222; /* Consistent dark background */
-  color: #e0e0e0; /* Light gray text color */
-  padding: 20px;
-  text-align: center;
-  margin-top: auto; /* Pushes the footer to the bottom */
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow above footer */
+  background-color: var(--surface-color);
+  border-top: 1px solid var(--card-border);
+  padding: 60px 20px 30px;
+  margin-top: 60px;
+  transition: var(--theme-transition);
 }
 
-.footer a {
-  color: #007bff; /* Link color */
+.footer-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-section h4 {
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  font-family: var(--font-heading);
+  font-size: 1.1em;
+}
+
+.footer-logo {
+  font-size: 1.8em;
+  font-weight: 800;
   text-decoration: none;
-  margin: 0 5px;
-  font-weight: bold; /* Make links bold */
-  transition: color 0.3s ease; /* Smooth color transition on hover */
-  
+  font-family: var(--font-heading);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
-.footer a:hover {
-  text-decoration: underline;
+.main-info p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 400px;
 }
-  
-  /* Para pantallas más pequeñas */
-  @media (max-width: 600px) {
-    .footer-links {
-      display: flex; /* Usar flexbox para los enlaces */
-      flex-direction: column; /* Apilar enlaces verticalmente */
-      gap: 5px; /* Espacio entre enlaces apilados */
-    }
-  
-    .footer-links a {
-      margin: 5px 0; /* Ajustar margen para apilado vertical */
-    }
+
+.links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.links li {
+  margin-bottom: 12px;
+}
+
+.links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.links a:hover {
+  color: var(--primary-color);
+}
+
+.attribution p {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+}
+
+.api-badge {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.footer-bottom {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-top: 30px;
+  border-top: 1px solid var(--card-border);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 40px 20px 20px;
   }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .main-info p {
+    margin: 0 auto;
+  }
+  
+  .footer-logo {
+    margin-bottom: 15px;
+  }
+}

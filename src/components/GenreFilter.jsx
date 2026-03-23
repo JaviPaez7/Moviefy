@@ -9,7 +9,7 @@ function GenreFilter({ type: contentType, selectedGenre, onGenreSelect }) {
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-    const API_URL = `https://api.themoviedb.org/3/genre/${contentType}/list?api_key=${apiKey}&language=en-US`;
+    const API_URL = `https://api.themoviedb.org/3/genre/${contentType}/list?api_key=${apiKey}&language=es-ES`;
 
     const fetchGenres = async () => {
       try {

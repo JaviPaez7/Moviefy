@@ -8,7 +8,7 @@ function SimilarContent({ type, id }) {
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-    const API_URL = `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${apiKey}&language=en-US&page=1`;
+    const API_URL = `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${apiKey}&language=es-ES&page=1`;
 
     const fetchSimilar = async () => {
       setLoading(true);

@@ -22,7 +22,7 @@ function HomePage() {
   // Fetch Hero Item (Solo una vez al cargar)
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-    fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}`)
+    fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}&language=es-ES`)
       .then(res => res.json())
       .then(data => {
         if (data.results && data.results.length > 0) {
@@ -42,7 +42,7 @@ function HomePage() {
     }
 
     try {
-      let url = `https://api.themoviedb.org/3/discover/${contentType}?api_key=${apiKey}&language=en-US&sort_by=${sortBy}&page=${currentPage}&include_adult=false`;
+      let url = `https://api.themoviedb.org/3/discover/${contentType}?api_key=${apiKey}&language=es-ES&sort_by=${sortBy}&page=${currentPage}&include_adult=false`;
       
       if (selectedGenre) {
         url += `&with_genres=${selectedGenre}`;

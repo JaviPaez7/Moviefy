@@ -9,7 +9,7 @@ import PersonDetailsPage from "./pages/PersonDetailsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import Footer from "./components/Footer";
-import ScrollToTop from "./components/ScrollToTop";
+import BackToTop from "./components/BackToTop"; // Changed from ScrollToTop
 import { UserProvider } from "./context/UserContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import "./App.css";
@@ -33,7 +33,7 @@ function App() {
               </Routes>
             </div>
             <Footer />
-            <ScrollToTop />
+            <BackToTop />
           </div>
         </BrowserRouter>
       </UserProvider>

@@ -171,11 +171,16 @@
   font-family: var(--font-body);
 }
 
-/* ---- Skeleton Card ---- */
-.skeleton-card {
-  cursor: default;
-  pointer-events: none;
-  animation: fadeInUp 0.4s ease both;
+@media (max-width: 768px) {
+  .movie-card-info {
+    padding: 12px;
+  }
+  .movie-card h3 {
+    font-size: 0.95em;
+  }
+  .movie-card p {
+    font-size: 0.75em;
+  }
 }
 
 .skeleton-img {
@@ -191,7 +196,7 @@
   width: 100%;
 }
 
-.skeleton-line {
+.skeleton-line, .skeleton-text {
   border-radius: 6px;
   background: linear-gradient(
     90deg,

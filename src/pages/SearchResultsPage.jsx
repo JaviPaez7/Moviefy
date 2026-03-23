@@ -45,7 +45,7 @@ function SearchResultsPage() {
     setError(null);
 
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-    const API_URL = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(searchTerm)}&language=en-US&page=${page}`;
+    const API_URL = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(searchTerm)}&language=es-ES&page=${page}`;
 
     const fetchSearchResults = async () => {
       try {

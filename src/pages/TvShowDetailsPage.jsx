@@ -3,7 +3,9 @@ import { useParams } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import CastSection from '../components/CastSection';
 import TrailerModal from '../components/TrailerModal';
+import MovieReviews from '../components/MovieReviews';
 import SimilarContent from '../components/SimilarContent';
+import SkeletonDetails from '../components/SkeletonDetails';
 import './MovieDetailsPage.css';
 
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
@@ -20,6 +22,7 @@ function TvShowDetailsPage() {
   const [showTrailer, setShowTrailer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [shareSuccess, setShareSuccess] = useState(false);
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
@@ -28,7 +31,7 @@ function TvShowDetailsPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const detailsRes = await fetch(`${baseUrl}${id}?api_key=${apiKey}&language=en-US`);
+        const detailsRes = await fetch(`${baseUrl}${id}?api_key=${apiKey}&language=es-ES`);
         if (!detailsRes.ok) throw new Error('Serie no encontrada.');
         const detailsData = await detailsRes.json();
         setTvShowDetails(detailsData);
@@ -37,12 +40,24 @@ function TvShowDetailsPage() {
         const creditsData = await creditsRes.json();
         setCast(creditsData.cast || []);
 
-        const videosRes = await fetch(`${baseUrl}${id}/videos?api_key=${apiKey}`);
-        const videosData = await videosRes.json();
-        const mainTrailer = videosData.results.find(
+        // Fetch Trailers
+        let videosRes = await fetch(`${baseUrl}${id}/videos?api_key=${apiKey}&language=es-ES`);
+        let videosData = await videosRes.json();
+        
+        let trailer = videosData.results?.find(
           v => v.type === 'Trailer' && v.site === 'YouTube'
-        ) || videosData.results[0];
-        setTrailer(mainTrailer);
+        );
+
+        // Fallback to English if no Spanish trailer
+        if (!trailer) {
+          videosRes = await fetch(`${baseUrl}${id}/videos?api_key=${apiKey}&language=en-US`);
+          videosData = await videosRes.json();
+          trailer = videosData.results?.find(
+            v => v.type === 'Trailer' && v.site === 'YouTube'
+          ) || videosData.results?.[0];
+        }
+
+        setTrailer(trailer);
 
         setLoading(false);
       } catch (err) {
@@ -56,12 +71,18 @@ function TvShowDetailsPage() {
     window.scrollTo(0, 0);
   }, [id]);
 
-  if (loading) return <div className="status-message">Cargando detalles de la serie...</div>;
+  if (loading) return <SkeletonDetails />;
   if (error) return <div className="status-message error-message">Error: {error}</div>;
   if (!tvShowDetails) return <div className="status-message">No se encontraron datos.</div>;
 
   const isFav = isFavorite(tvShowDetails.id);
   const isWatch = isInWatchlist(tvShowDetails.id);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setShareSuccess(true);
+    setTimeout(() => setShareSuccess(false), 2000);
+  };
 
   return (
     <div className="movie-details-page">
@@ -106,6 +127,14 @@ function TvShowDetailsPage() {
               >
                 {isWatch ? '🔖' : '📑'}
               </button>
+
+              <button 
+                className={`favorite-btn-details share-btn ${shareSuccess ? 'success' : ''}`} 
+                onClick={handleShare}
+                title="Compartir enlace"
+              >
+                {shareSuccess ? '✅' : '🔗'}
+              </button>
             </div>
           </div>
 
@@ -121,8 +150,8 @@ function TvShowDetailsPage() {
             </div>
           )}
 
-          <p><strong>Rating:</strong> {tvShowDetails.vote_average ? tvShowDetails.vote_average.toFixed(1) : 'N/A'} / 10</p>
-          <p><strong>Primera Emisión:</strong> {tvShowDetails.first_air_date || 'N/A'}</p>
+          <p><strong>Puntuación:</strong> {tvShowDetails.vote_average ? tvShowDetails.vote_average.toFixed(1) : 'N/A'} / 10</p>
+          <p><strong>Fecha de Estreno:</strong> {tvShowDetails.first_air_date || 'N/A'}</p>
           <p><strong>Temporadas:</strong> {tvShowDetails.number_of_seasons || 'N/A'}</p>
           <p><strong>Episodios:</strong> {tvShowDetails.number_of_episodes || 'N/A'}</p>
           

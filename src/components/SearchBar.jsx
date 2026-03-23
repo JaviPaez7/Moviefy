@@ -18,7 +18,7 @@ function SearchBar({ onSearch }) {
 
     const timer = setTimeout(async () => {
       try {
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(searchTerm)}&page=1&include_adult=false`;
+        const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=es-ES&query=${encodeURIComponent(searchTerm)}&page=1&include_adult=false`;
         const response = await fetch(url);
         const data = await response.json();
         // Filtramos solo películas y series (TMDB multi search de veces incluye personas)
@@ -64,7 +64,7 @@ function SearchBar({ onSearch }) {
       <form onSubmit={handleSubmit} className="search-bar">
         <input
           type="text"
-          placeholder="Buscar..."
+          placeholder="Buscar películas o series..." 
           className="search-input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

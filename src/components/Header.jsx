@@ -18,11 +18,10 @@ function Header() {
     
     try {
       // Elegimos una página aleatoria de populares (1-5)
-      const randomPage = Math.floor(Math.random() * 5) + 1;
-      const type = Math.random() > 0.5 ? 'movie' : 'tv';
-      const response = await fetch(
-        `https://api.themoviedb.org/3/${type}/popular?api_key=${apiKey}&language=en-US&page=${randomPage}`
-      );
+      const types = ['movie', 'tv'];
+      const randomType = types[Math.floor(Math.random() * types.length)];
+      
+      const response = await fetch(`https://api.themoviedb.org/3/trending/${randomType}/week?api_key=${apiKey}&language=es-ES`);
       const data = await response.json();
       
       if (data.results && data.results.length > 0) {
@@ -47,9 +46,9 @@ function Header() {
         <Link to="/" className="logo">
           Moviefy
         </Link>
+        <SearchBar onSearch={handleSearch} />
+
         <div className="header-actions">
-          <SearchBar onSearch={handleSearch} />
-          
           <button 
             className={`surprise-btn ${isSurprising ? 'loading' : ''}`} 
             onClick={handleSurpriseMe}
