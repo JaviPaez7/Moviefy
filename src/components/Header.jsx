@@ -30,7 +30,7 @@ function Header() {
         
         // Pequeña pausa para efecto dramático
         setTimeout(() => {
-          navigate(`/${type}/${randomItem.id}`);
+          navigate(`/${randomType}/${randomItem.id}`);
           setIsSurprising(false);
         }, 600);
       }

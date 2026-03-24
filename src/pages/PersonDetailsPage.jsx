@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
+import SkeletonPerson from '../components/SkeletonPerson';
 import './PersonDetailsPage.css';
 
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
@@ -48,7 +49,7 @@ function PersonDetailsPage() {
     window.scrollTo(0, 0);
   }, [id]);
 
-  if (loading) return <div className="status-message">Cargando perfil del actor...</div>;
+  if (loading) return <SkeletonPerson />;
   if (error) return <div className="status-message error-message">Error: {error}</div>;
   if (!person) return null;
 

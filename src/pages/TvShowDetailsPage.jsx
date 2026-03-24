@@ -158,6 +158,7 @@ function TvShowDetailsPage() {
           <p><strong>Sinopsis:</strong><br />{tvShowDetails.overview || 'Sin sinopsis disponible.'}</p>
 
           <CastSection cast={cast} />
+          <MovieReviews type="tv" id={id} />
         </div>
       </div>
 

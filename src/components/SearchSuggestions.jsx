@@ -24,18 +24,29 @@ function SearchSuggestions({ suggestions, onSelect, isVisible }) {
           onClick={() => handleSelect(item)}
         >
           <div className="suggestion-poster">
-            {item.poster_path ? (
-              <img src={`${TMDB_IMAGE_BASE_URL}${item.poster_path}`} alt={item.title || item.name} />
+            { (item.poster_path || item.profile_path) ? (
+              <img 
+                src={`${TMDB_IMAGE_BASE_URL}${item.poster_path || item.profile_path}`} 
+                alt={item.title || item.name} 
+              />
             ) : (
-              <div className="no-poster-suggestion">🎬</div>
+              <div className="no-poster-suggestion">
+                {item.media_type === 'person' ? '👤' : '🎬'}
+              </div>
             )}
           </div>
           <div className="suggestion-info">
             <p className="suggestion-title">{item.title || item.name}</p>
             <p className="suggestion-subtitle">
-              {item.release_date || item.first_air_date ? (item.release_date || item.first_air_date).split('-')[0] : 'N/A'} 
-              {' • '} 
-              {item.media_type === 'tv' ? 'Serie' : 'Película'}
+              {item.media_type === 'person' ? (
+                `Actor • ${item.known_for_department || ''}`
+              ) : (
+                <>
+                  {item.release_date || item.first_air_date ? (item.release_date || item.first_air_date).split('-')[0] : 'N/A'}
+                  {' • '}
+                  {item.media_type === 'tv' ? 'Serie' : 'Película'}
+                </>
+              )}
             </p>
           </div>
         </div>

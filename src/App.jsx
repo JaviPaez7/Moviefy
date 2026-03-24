@@ -8,6 +8,7 @@ import TvShowDetailsPage from "./pages/TvShowDetailsPage";
 import PersonDetailsPage from "./pages/PersonDetailsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import WatchlistPage from "./pages/WatchlistPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import Footer from "./components/Footer";
 import BackToTop from "./components/BackToTop"; // Changed from ScrollToTop
 import { UserProvider } from "./context/UserContext";
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/search" element={<SearchResultsPage />} />
                 <Route path="/favorites" element={<FavoritesPage />} />
                 <Route path="/watchlist" element={<WatchlistPage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </div>
             <Footer />

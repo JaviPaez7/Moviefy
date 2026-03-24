@@ -23,7 +23,7 @@ function SearchBar({ onSearch }) {
         const data = await response.json();
         // Filtramos solo películas y series (TMDB multi search de veces incluye personas)
         const filtered = data.results
-          ? data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv').slice(0, 8)
+          ? data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv' || item.media_type === 'person').slice(0, 8)
           : [];
         setSuggestions(filtered);
         setShowSuggestions(true);

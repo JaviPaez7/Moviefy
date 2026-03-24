@@ -118,6 +118,12 @@
   gap: 30px;
 }
 
+/* --- Skeleton Adjustment --- */
+.skeleton-details .person-header {
+  background: var(--surface-color-solid);
+  border-color: var(--card-border);
+}
+
 @media (max-width: 1024px) {
   .person-header {
     flex-direction: column;

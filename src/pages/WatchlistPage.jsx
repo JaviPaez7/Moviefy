@@ -6,7 +6,7 @@ function WatchlistPage() {
   const { watchlist } = useContext(UserContext);
 
   return (
-    <div className="favorites-page">
+    <div className="watchlist-page">
       <h1>Mi Lista de Seguimiento (Ver más tarde)</h1>
       
       {watchlist.length === 0 ? (
